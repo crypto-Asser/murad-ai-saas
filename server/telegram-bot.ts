@@ -101,10 +101,19 @@ async function getAiResponse(
 
     const startTime = Date.now();
 
-    // Make API request
-    // TODO: Implement actual Groq API call with fetch
-    // For now, return placeholder
-    const reply = 'تم استقبال رسالتك بنجاح! 🎉';
+    // Make API request to Groq
+    const response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content || 'لم أتمكن من الرد على رسالتك.';
     const responseTime = Date.now() - startTime;
 
     // Save to database
